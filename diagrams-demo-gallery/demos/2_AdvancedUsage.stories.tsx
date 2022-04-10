@@ -13,6 +13,7 @@ import demo_smart_routing from './demo-smart-routing';
 import demo_right_angles_routing from './demo-right-angles-routing';
 import demo_alternative_linking from './demo-alternative-linking';
 import demo_custom_delete_keys from './demo-custom_delete_keys';
+import demo_custom_event_listeners from './demo-custom-event-listeners';
 
 export const CloneSelected = demo_adv_clone_selected;
 export const SerializingAndDeSerializing = demo_adv_ser_des;
@@ -22,3 +23,4 @@ export const SmartRouting = demo_smart_routing;
 export const RightAnglesRouting = demo_right_angles_routing;
 export const LinkingByClickingInsteadOfDragging = demo_alternative_linking;
 export const SettingCustomDeleteKeys = demo_custom_delete_keys;
+export const CustomEventListeners = demo_custom_event_listeners;
