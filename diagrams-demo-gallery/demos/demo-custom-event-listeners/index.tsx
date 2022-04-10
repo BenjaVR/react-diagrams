@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 import createEngine, {
 	DefaultNodeModel,
@@ -9,6 +9,8 @@ import { DemoCanvasWidget } from '../helpers/DemoCanvasWidget';
 
 function useEngineWithCustomHandlers(eventHandlers: {
 	onAdd?: (node: NodeModel) => void;
+	onMove?: (node: NodeModel) => void;
+	onRemove?: (node: NodeModel) => void;
 }) {
 	const [engine, setEngine] = useState(() => {
 		const _engine = createEngine();
@@ -22,8 +24,16 @@ function useEngineWithCustomHandlers(eventHandlers: {
 			nodesUpdated: event => {
 				if (event.isCreated) {
 					eventHandlers?.onAdd(event.node);
+					event.node.registerListener({
+						positionChanged: () => {
+							eventHandlers?.onMove(event.node);
+						},
+						entityRemoved: () => {
+							eventHandlers?.onRemove(event.node);
+						},
+					})
 				}
-			}
+			},
 		};
 		const { deregister } = engine.getModel().registerListener(handlers);
 		return deregister;
@@ -35,8 +45,14 @@ function useEngineWithCustomHandlers(eventHandlers: {
 export default () => {
 	const [caughtEvents, setCaughtEvents] = useState([]);
 
+	const addEvent = useCallback((eventMsg: string) => {
+		setCaughtEvents(prev => [...prev, eventMsg]);
+	}, []);
+
 	const engine = useEngineWithCustomHandlers({
-		onAdd: node => setCaughtEvents(prev => [...prev, `New node with id '${node.getID()}' is added`]),
+		onAdd: node => addEvent(`New node with id '${node.getID()}' is added`),
+		onMove: node => addEvent(`Moved node with id '${node.getID()}' to (${node.getPosition().x},${node.getPosition().y})`),
+		onRemove: node => addEvent(`Removed node with id '${node.getID()}'`),
 	});
 
 	const addNode = () => {
